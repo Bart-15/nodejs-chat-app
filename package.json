@@ -1,0 +1,18 @@
+{
+  "name": "chat-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client": "npm start --prefix client",
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "dev" : "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "Bart Tabusao",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

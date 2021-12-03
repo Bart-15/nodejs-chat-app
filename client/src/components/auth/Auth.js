@@ -4,15 +4,19 @@ import axios from 'axios';
 
 import background from '../../assets/background.png'
 
-
+const cookies = new Cookies();
 const initalState = {
     fullName:"",
-    userName:"",
+    username:"",
     password:"",
     confirmPassword:"",
     phoneNumber:"",
-    avatarURL:""
+    image:""
 }
+
+// api key for stream chat
+
+
 const Auth = () => {
     const [isSignup, setIsSignup] = useState(false)
     const [isForm, isSetForm] = useState(initalState)
@@ -25,26 +29,36 @@ const Auth = () => {
         isSetForm(initalState)
     }
 
-    const handleSignUp = (e) => {
-        e.preventDefault();
-        console.log(isForm)
-        
+    const handleSubmit = async (e) => {
+        e.preventDefault();    
+        const BASE_URL = 'http://localhost:5000'
+        const { username, password, phoneNumber, image } = isForm;
+        const { data: { token, userId, hashedPassword, fullName } } = await axios.post(`${BASE_URL}/${isSignup ? 'signup' : 'login'}`, {
+            username, password, fullName: isForm.fullName, phoneNumber, image,
+        });
+
+        cookies.set('token', token);
+        cookies.set('username', username);
+        cookies.set('fullName', fullName);
+        cookies.set('userId', userId);
+
+        if(isSignup) {
+            cookies.set('phoneNumber', phoneNumber);
+            cookies.set('image', image);
+            cookies.set('hashedPassword', hashedPassword);
+        }
+
+        window.location.reload();
+       
     }
 
-    const handleSignIn = (e) => {
-        e.preventDefault();
-        const username = isForm.userName;
-        const password = isForm.password;
-
-        console.log(username + password)
-    }
 
     return (
         <div className="auth__form-container">
             <div className="auth__form-container_fields">
                 <div className="auth__form-container_fields-content">
                     <p>{isSignup ? "Sign Up" : "Sign In"}</p>
-                    <form onSubmit={isSignup ? handleSignUp : handleSignIn}>
+                    <form onSubmit={handleSubmit}>
                         {isSignup && (
                             <>
                                  <div className="auth__form-container_fields-content_input">
@@ -58,9 +72,9 @@ const Auth = () => {
                                         />
                                 </div>
                                 <div className="auth__form-container_fields-content_input">
-                                    <label htmlFor="userName">User Name</label>
+                                    <label htmlFor="username">User Name</label>
                                     <input 
-                                        name="userName"
+                                        name="username"
                                         type="text"
                                         onChange={handleChange}
                                         placeholder="User Name"
@@ -78,10 +92,10 @@ const Auth = () => {
                                         />
                                 </div>
                                 <div className="auth__form-container_fields-content_input">
-                                    <label htmlFor="avatar">Avatar</label>
+                                    <label htmlFor="image">Avatar</label>
                                     <input
-                                    name="avatarURL" 
-                                    placeholder="Avatar"
+                                    name="image" 
+                                    placeholder="image"
                                     type="text"
                                     onChange={handleChange}
                                     required
